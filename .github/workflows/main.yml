@@ -1,6 +1,9 @@
 on:
   push:
   workflow_dispatch:
+permissions:
+  packages: write
+  contents: write
 
 jobs:
   publish:
@@ -13,7 +16,7 @@ jobs:
         run: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
     env:
-      IMAGE: containers-lab.pkg.github.com/${{ github.repository }}
+      IMAGE: ghcr.io/${{ github.repository }}
       RUN: ${{ matrix.run }}
 
     steps:
@@ -28,7 +31,7 @@ jobs:
         run: docker build . -t ${IMAGE,,}:${{ matrix.tag }} # lowercase IMAGE
 
       - name: Login to ghcr.io
-        run: docker login containers-lab.pkg.github.com -u token --password-stdin <<< ${{ github.token }}
+        run: docker login ghcr.io -u token --password-stdin <<< ${{ github.token }}
 
       - name: Publish image
         run: docker push ${IMAGE,,}:${{ matrix.tag }} # lowercase IMAGE
